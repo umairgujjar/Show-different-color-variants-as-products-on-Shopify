@@ -1,0 +1,81 @@
+{% comment %}
+
+1. Add code below to collection section
+
+2. Add following 3 settings to section schema
+  {
+        "type": "checkbox",
+        "id": "variants_products",
+        "label": "Show Variants as Products",
+        "default": true
+    },
+    {
+      "type": "text",
+      "id": "show_only",
+      "label": "Show Only Options Add with Commas",
+      "info": "Vibrant Red, White, Hot Pink, Gold"
+    },
+    {
+      "type": "text",
+      "id": "hide_only",
+      "label": "Hide Only Options Add with Commas",
+      "info": "Vibrant Red, White, Hot Pink, Gold"
+    }
+{% endcomment %}
+
+  {% assign show_only = section.settings.show_only | split: ", " | handleize %}
+  {% assign hide_only = section.settings.hide_only | split: ", " | handleize %}
+
+{%- for item in collection.products -%}
+    {%- unless item.tags contains 'hide' -%}
+    
+        {%- if section.settings.variants_products -%}
+        
+            {% if item.variants.size > 1 %}
+                {%- render 'product-grid-variant-items', product: item, show_only: show_only, hide_only: hide_only -%}
+            {% else %}
+		        {%- render 'product-grid-item', product: item -%}
+            {% endif %}
+    
+        {% else %}
+	        {%- render 'product-grid-item', product: item -%}    
+        {% endif %}
+    
+        {%- if quick_shop_enable -%}
+            {%- render 'quick-shop-modal', product: item -%}
+        {%- endif -%}
+    
+    {%- endunless -%}
+{%- endfor -%}
+
+
+{% schema %}
+{
+  "name": "Product grid",
+  "settings": [    
+    {
+        "type": "checkbox",
+        "id": "variants_products",
+        "label": "Show Variants as Products",
+        "default": true
+    },
+    {
+      "type": "header",
+      "content": "Use Show only or Hide Only",
+      "info": "Never Use Both"
+    },
+    {
+      "type": "text",
+      "id": "show_only",
+      "label": "Show Only Options Add with Commas",
+      "info": "Vibrant Red, White, Hot Pink, Gold"
+    },
+    {
+      "type": "text",
+      "id": "hide_only",
+      "label": "Hide Only Options Add with Commas",
+      "info": "Vibrant Red, White, Hot Pink, Gold"
+    }
+  ]
+}
+{% endschema %}
